@@ -103,8 +103,12 @@ fn main() -> io::Result<()> {
     infile.seek(SeekFrom::Start(begin as u64))?;
     let mut last_chunk_begin = 0;
     let mut last_begin = 0;
+
+    let bar = indicatif::ProgressBar::new(infile.metadata()?.len());
+
     while begin != last_begin {
         last_begin = begin;
+        bar.set_position(begin);
         let read = infile.read_at(&mut buf, begin)?;
         for len in 0..read {
             if len >= read as usize {
@@ -159,5 +163,6 @@ fn main() -> io::Result<()> {
             };
         }
     }
+    bar.finish();
     Ok(())
 }
